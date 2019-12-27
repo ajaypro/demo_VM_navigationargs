@@ -54,49 +54,56 @@ class GameFragment : Fragment() {
                 false
         )
 
-        binding.correctButton.setOnClickListener { onCorrect() }
-        binding.skipButton.setOnClickListener {onSkip() }
-        binding.endGameButton.setOnClickListener { onEndGame()}
+        viewModel.word.observe(this, Observer {
+            binding.wordText.text = it
+        })
+
+        viewModel.score.observe(this, Observer {
+            binding.scoreText.text = it.toString()
+        })
+
+        viewModel.eventGameFinish.observe(this, Observer {
+            if(it) gameFinished()
+        })
+
+        binding.correctButton.setOnClickListener {
+            onCorrect()
+        }
+
+        binding.skipButton.setOnClickListener {
+            onSkip()
+        }
+        binding.endGameButton.setOnClickListener { onEndGame() }
 
 
-        updateScoreText()
-        updateWordText()
         return binding.root
 
     }
 
-    private fun onSkip(){
+    private fun onSkip() {
         viewModel.onSkip()
-        updateWordText()
-        updateScoreText()
+
     }
 
-    private fun onCorrect(){
+    private fun onCorrect() {
         viewModel.onCorrect()
-        updateScoreText()
-        updateWordText()
+
     }
 
-    private fun onEndGame(){
+    private fun onEndGame() {
         gameFinished()
     }
 
 
     /** Methods for updating the UI **/
 
-    private fun updateWordText() {
-        binding.wordText.text = viewModel.word
-    }
 
-    private fun updateScoreText() {
-        binding.scoreText.text = viewModel.score.toString()
-    }
-
-    private fun gameFinished(){
+    private fun gameFinished() {
         Toast.makeText(activity, "Game has just finished", Toast.LENGTH_SHORT).show()
-        val action = GameFragmentDirections.actionGameToScore(viewModel.score)
-       // action.score = viewModel.score
+        val action = GameFragmentDirections.actionGameToScore()
+        action.score = viewModel.score.value ?: 0
         findNavController().navigate(action)
+        viewModel.onGameFinishComplete()
     }
 
 

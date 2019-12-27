@@ -20,9 +20,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.android.guesstheword.R
 import com.example.android.guesstheword.databinding.ScoreFragmentBinding
@@ -51,8 +54,30 @@ class ScoreFragment : Fragment() {
         viewModelFactory = ScoreViewModelFactory(ScoreFragmentArgs.fromBundle(arguments!!).score)
         scoreViewModel = ViewModelProviders.of(this, viewModelFactory).get(ScoreViewModel::class.java)
 
-        binding.scoreText.text = scoreViewModel.score.toString()
+        scoreViewModel.score.observe(this, Observer {
+            binding.scoreText.text = it.toString()
+        })
+
+        scoreViewModel.playAgain.observe(this, Observer {
+            if (it) {
+                playAgain()
+            }
+        })
+
+        binding.playAgainButton.setOnClickListener {
+            scoreViewModel.onPlayAgain()
+        }
+
 
         return binding.root
+    }
+
+    private fun playAgain() {
+
+        Toast.makeText(activity, "Play Again", Toast.LENGTH_SHORT).show()
+        val action = ScoreFragmentDirections.actionRestart()
+        findNavController().navigate(action)
+        scoreViewModel.onPlayAgainComplete()
+
     }
 }
