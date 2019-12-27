@@ -44,7 +44,7 @@ class ScoreFragment : Fragment() {
                 container,
                 false
         )
-        binding.scoreText.text = ScoreFragmentArgs.fromBundle(arguments!!).score.toString()
+       binding.scoreText.text = ScoreFragmentArgs.fromBundle(arguments!!).score.toString()
 
         return binding.root
     }
