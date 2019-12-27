@@ -33,16 +33,16 @@ import com.example.android.guesstheword.databinding.ScoreFragmentBinding
 /**
  * Fragment where the final score is shown, after the game is over
  */
+
 class ScoreFragment : Fragment() {
 
-    lateinit var scoreViewModel: ScoreViewModel
+    lateinit var viewModel: ScoreViewModel
     lateinit var viewModelFactory: ScoreViewModelFactory
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
+            savedInstanceState: Bundle?): View? {
 
         // Inflate view and obtain an instance of the binding class.
         val binding: ScoreFragmentBinding = DataBindingUtil.inflate(
@@ -51,22 +51,18 @@ class ScoreFragment : Fragment() {
                 container,
                 false
         )
+
         viewModelFactory = ScoreViewModelFactory(ScoreFragmentArgs.fromBundle(arguments!!).score)
-        scoreViewModel = ViewModelProviders.of(this, viewModelFactory).get(ScoreViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ScoreViewModel::class.java)
 
-        scoreViewModel.score.observe(this, Observer {
-            binding.scoreText.text = it.toString()
-        })
+        binding.scoreViewModel = viewModel
+        binding.lifecycleOwner = this
 
-        scoreViewModel.playAgain.observe(this, Observer {
+        viewModel.playAgain.observe(this, Observer {
             if (it) {
                 playAgain()
             }
         })
-
-        binding.playAgainButton.setOnClickListener {
-            scoreViewModel.onPlayAgain()
-        }
 
 
         return binding.root
@@ -77,7 +73,7 @@ class ScoreFragment : Fragment() {
         Toast.makeText(activity, "Play Again", Toast.LENGTH_SHORT).show()
         val action = ScoreFragmentDirections.actionRestart()
         findNavController().navigate(action)
-        scoreViewModel.onPlayAgainComplete()
+        viewModel.onPlayAgainComplete()
 
     }
 }

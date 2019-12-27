@@ -54,44 +54,15 @@ class GameFragment : Fragment() {
                 false
         )
 
-        viewModel.word.observe(this, Observer {
-            binding.wordText.text = it
-        })
-
-        viewModel.score.observe(this, Observer {
-            binding.scoreText.text = it.toString()
-        })
+        binding.gameViewModel = viewModel
+        binding.lifecycleOwner = this
 
         viewModel.eventGameFinish.observe(this, Observer {
             if(it) gameFinished()
         })
 
-        binding.correctButton.setOnClickListener {
-            onCorrect()
-        }
-
-        binding.skipButton.setOnClickListener {
-            onSkip()
-        }
-        binding.endGameButton.setOnClickListener { onEndGame() }
-
-
         return binding.root
 
-    }
-
-    private fun onSkip() {
-        viewModel.onSkip()
-
-    }
-
-    private fun onCorrect() {
-        viewModel.onCorrect()
-
-    }
-
-    private fun onEndGame() {
-        gameFinished()
     }
 
 
